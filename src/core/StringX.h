@@ -177,6 +177,16 @@ template<class T> void Format(T &s, const TCHAR *fmt, ...);
 template<class T> void Format(T &s, int fmt, ...);
 template<class T> void LoadAString(T &s, int id);
 
+// Following needed to support GCC11, which requires a hash function for unordered_set<StringX>
+namespace std {
+  template<>
+  struct hash<StringX> {
+    size_t operator()(const StringX& s) const noexcept {
+      return std::hash<std::wstring>{}(s.c_str());
+    }
+  };
+}
+
 inline stringT stringx2std(const StringX &str) { return stringT(str.data(), str.size()); }
 inline StringX std2stringx(const stringT& str)   { return StringX(str.data(), str.size()); }
 
